@@ -130,9 +130,6 @@ dmypy.json
 .pyre/
 
 # Example data
-/example/behave/screenshots/
-/example/behave/logs/
-/example/behave/reports/
 chromedriver
 *.png
 
