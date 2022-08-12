@@ -1,5 +1,7 @@
 import time
 
+from selenium.webdriver.common.by import By
+
 from lib.application import Application
 
 # Optional
@@ -7,7 +9,7 @@ config = {
     'app_port': 9000,
     'electron_log_path': 'electron.log',
     'chromedriver_log_path': 'chrome.log',
-    'wait_timeout': 3000,
+    'wait_timeout': 5000,
 }
 
 app = Application(
@@ -18,7 +20,8 @@ app = Application(
 app.start()
 
 time.sleep(5)
-print(app.client.title)
+assert app.client.match.Title.has("Slack")
+
 app.take_screenshot()
 
 app.stop()

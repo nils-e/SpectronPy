@@ -22,3 +22,7 @@ class NotInitialized(Error):
 
 class ClientError(Error):
     pass
+
+
+class ExpectationNotNet(Error):
+    pass

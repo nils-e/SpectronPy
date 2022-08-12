@@ -13,11 +13,13 @@ import psutil
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.common.timeouts import Timeouts
 from webdriver_manager.chrome import ChromeDriverManager
 
 from lib.configuration import Configuration
 from lib.exception import POpenError, InvalidArgument, UnsupportedOS, NotInitialized, ClientError
-from lib.helper import to_seconds
+from lib.driver import SpectronDriver
+import lib.helper as helper
 
 logger = logging.getLogger(__name__)
 
@@ -42,14 +44,14 @@ class Application:
         self.config = Configuration(**config)
 
         self.os = platform.system()
-        self._client: Optional[WebDriver] = None
+        self._client: Optional[SpectronDriver] = None
         self.return_code = None
         self.app: Optional[Popen] = None
         self.running = False
         self.results = None
 
     @property
-    def client(self):
+    def client(self) -> SpectronDriver:
         if self._client is None:
             msg = "Client not started yet."
             logger.error(msg)
@@ -63,10 +65,8 @@ class Application:
 
         asyncio.run(self.start_client())
 
-        time_seconds = to_seconds(self.config.wait_timeout)
-        self.client.set_page_load_timeout(time_seconds)
-        self.client.set_script_timeout(time_seconds)
-        self.client.implicitly_wait(time_seconds)
+        wait_time = helper.to_seconds(self.config.wait_timeout)
+        self.client.update_wait(wait_time)
 
         self.running = True
 
@@ -132,7 +132,7 @@ class Application:
         # Chromedriver has an unconfigurable default timeout of 60 seconds.
         # We add a configurable timeout to it via asyncio.
         def start_webdriver(wb_args):
-            return WebDriver(**wb_args)
+            return SpectronDriver(wb_args)
 
         webdriver_args = self.config.webdriver_options
         kwargs = {
@@ -140,7 +140,7 @@ class Application:
                      'service': chrome_service
                  } | webdriver_args
 
-        timeout_seconds = to_seconds(self.config.start_timeout)
+        timeout_seconds = helper.to_seconds(self.config.start_timeout)
         try:
             self._client: WebDriver = await asyncio.wait_for(
                 asyncio.to_thread(start_webdriver, kwargs),
@@ -191,7 +191,6 @@ class Application:
         }
 
         try:
-            logger.info(kwargs)
             logger.info(f'Running command: {cmd + args}')
             self.app = Popen(cmd + args, **kwargs)
             self.return_code = self.app.returncode
