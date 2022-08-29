@@ -24,5 +24,9 @@ class ClientError(Error):
     pass
 
 
-class ExpectationNotNet(Error):
+class ExpectationNotMet(Error):
+    pass
+
+
+class AmbiguousMatch(Error):
     pass

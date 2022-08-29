@@ -1,8 +1,7 @@
-import time
-
 from selenium.webdriver.common.by import By
 
 from lib.application import Application
+from lib.assertions import assert_selector
 
 # Optional
 config = {
@@ -18,9 +17,21 @@ app = Application(
     config=config
 )
 app.start()
+app.default_selector(By.CSS_SELECTOR)
 
-time.sleep(5)
-assert app.client.match.Title.has("Slack")
+# Find elements
+all_links = app.client.find.all('.p-channel_sidebar__channel', text='selenium')
+first_link = app.client.find.first('.p-channel_sidebar__channel', text='selenium')
+
+# Asserts
+assert app.client.find.element('.p-channel_sidebar__channel', text='selenium').text == first_link.text
+assert all_links[0].text == first_link.text
+assert app.client.match.Title.has('slack', case_insensitive=True)
+expected_text = first_link.text
+assert_selector('.p-channel_sidebar__channel', text=expected_text, visible=True)
+
+# Actions
+app.client.find.first('button').click()
 
 app.take_screenshot()
 

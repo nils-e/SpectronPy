@@ -1,3 +1,5 @@
+# configuration.py
+
 import os
 from dataclasses import dataclass, asdict, field
 
@@ -15,7 +17,7 @@ class Configuration:
         Timeout for webdriver start up.
 
     wait_timeout
-        Timeout for WebDriver. Refer to WebDriver class for set_page_load_timeout, set_script_timeout, implicitly_wait.
+        Timeout for WebDriver wait. Refer to WebDriver class for set_page_load_timeout, set_script_timeout, implicitly_wait.
 
     stop_timeout
         Timeout for Application termination.
@@ -49,10 +51,13 @@ class Configuration:
     electron_log_path
         Location for Electron log file to output. ex: electron.log
 
+    debug_timeout
+        Timeout for pause functionality. Refer to `Application.pause()`.
+
     """
     app_path: str = ''
     app_port: int = 9515
-    start_timeout: int = 10000
+    start_timeout: int = 10_000
     wait_timeout: int = 5000
     stop_timeout: int = 5000
     electron_args: list = field(default_factory=list)
@@ -65,6 +70,7 @@ class Configuration:
     chromedriver_log_path: str = ''
     chromedriver_verbose: bool = False
     electron_log_path: str = ''
+    debug_timeout: int = 50_000
 
     def dict(self):
         return {k: v for k, v in asdict(self).items()}

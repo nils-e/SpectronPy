@@ -1,16 +1,17 @@
-# finders.py
-from pprint import pprint
+# driver.py
 
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.timeouts import Timeouts
 
-import lib.matchers as matchers
-import lib.finders as finders
+import lib.globals
 
 
 class SpectronDriver(WebDriver):
 
     def __init__(self, kwargs):
+        import lib.matchers as matchers
+        import lib.finders as finders
+
         super().__init__(**kwargs)
         matchers.driver = self
         finders.driver = self
@@ -23,6 +24,8 @@ class SpectronDriver(WebDriver):
             page_load=wait_time,
             script=wait_time
         )
+        self._set_wait_timers(timeouts)
+
+    def _set_wait_timers(self, timeouts: Timeouts):
         self.timeouts = timeouts
-        self.match.default_wait_time = timeouts.implicit_wait
-        self.find.default_wait_time = timeouts.implicit_wait
+        lib.globals.default_wait_time = timeouts.implicit_wait

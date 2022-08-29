@@ -1,10 +1,14 @@
+# application.py
+
 import asyncio
+import atexit
 import logging
 import os
 import platform
 import shlex
+import signal
 import subprocess
-import sys
+import threading
 from pathlib import Path
 from subprocess import Popen
 from typing import Optional
@@ -13,13 +17,14 @@ import psutil
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.webdriver import WebDriver
-from selenium.webdriver.common.timeouts import Timeouts
+from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-from lib.configuration import Configuration
-from lib.exception import POpenError, InvalidArgument, UnsupportedOS, NotInitialized, ClientError
-from lib.driver import SpectronDriver
+import lib.globals
 import lib.helper as helper
+from lib.configuration import Configuration
+from lib.driver import SpectronDriver
+from lib.exception import POpenError, InvalidArgument, UnsupportedOS, NotInitialized, ClientError
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +40,6 @@ class Application:
          - chromedriver_version : Specify the exact chromedriver version. https://chromedriver.chromium.org/downloads
          - config : List of optional configurations for webdriver, chromedriver, and electron. Refer to Configuration class for details.
          """
-
         if config is None:
             config = {}
 
@@ -44,11 +48,12 @@ class Application:
         self.config = Configuration(**config)
 
         self.os = platform.system()
-        self._client: Optional[SpectronDriver] = None
         self.return_code = None
-        self.app: Optional[Popen] = None
         self.running = False
         self.results = None
+        self._client: Optional[SpectronDriver] = None
+        self._app: Optional[Popen] = None
+        self._thread_wait: threading.Event = None
 
     @property
     def client(self) -> SpectronDriver:
@@ -61,13 +66,15 @@ class Application:
 
     def start(self) -> None:
         """Start App and Client."""
+        lib.globals.initialize()
         self.start_app()
 
-        asyncio.run(self.start_client())
+        lib.globals.driver = asyncio.run(self.start_client())
 
         wait_time = helper.to_seconds(self.config.wait_timeout)
         self.client.update_wait(wait_time)
 
+        self._register_close_events()
         self.running = True
 
     def stop(self) -> None:
@@ -75,23 +82,24 @@ class Application:
         if not self.is_running():
             return
 
-        if self.app.stdout:
-            logger.info(f'Closing any log file.')
-            self.app.stdout.close()
-            self.app.stderr.close()
+        if self._app.stdout:
+            logger.info(f'Closed log file.')
+            self._app.stdout.close()
 
         self.switch_to_main_window()
         self.client.close()
         self.client.quit()
+
+        logger.info("Application closed.")
         self._cleanup()
 
     def terminate(self) -> None:
         """Close Electron process tree using OS-specific functions."""
-        if not self.app:
+        if not self._app:
             return
 
-        timeout_seconds = to_seconds(self.config.stop_timeout)
-        process = psutil.Process(self.app.pid)
+        timeout_seconds = helper.to_seconds(self.config.stop_timeout)
+        process = psutil.Process(self._app.pid)
         child_processes = process.children(recursive=True)
 
         try:
@@ -149,16 +157,16 @@ class Application:
         except asyncio.TimeoutError:
             logger.error(f"Took longer than {timeout_seconds} seconds to start.")
             raise
-        finally:
-            logger.info("WebDriver started.")
-            logger.info(f"Application Electron version: {self._electron_version()}")
+
+        logger.info("WebDriver started.")
+        logger.info(f"Application Electron version: {self._electron_version()}")
 
         return self.client
 
     def start_app(self) -> Popen:
         """Open Electron app."""
         if self.is_running():
-            return self.app
+            return self._app
 
         if self.os == "Darwin":
             cmd = shlex.split(f'{self.config.app_path} --args')
@@ -192,15 +200,15 @@ class Application:
 
         try:
             logger.info(f'Running command: {cmd + args}')
-            self.app = Popen(cmd + args, **kwargs)
-            self.return_code = self.app.returncode
+            self._app = Popen(cmd + args, **kwargs)
+            self.return_code = self._app.returncode
         except OSError as e:
             logger.exception(f"Error opening App! {e}")
             raise POpenError
 
         logger.info("Application started.")
 
-        return self.app
+        return self._app
 
     def wait_until_window_loaded(self):
         raise NotImplementedError
@@ -231,6 +239,40 @@ class Application:
         logger.info(f'Saving screenshot to "{"/".join(file_path)}"')
         self.client.save_screenshot("/".join(file_path))
 
+    def devtools_url(self) -> str:
+        return f"http://{self._debugger_address()}"
+
+    def pause(self, timeout=None) -> None:
+        if timeout is None:
+            timeout = self.config.debug_timeout
+
+        timeout = helper.to_seconds(timeout)
+
+        signal.signal(signal.SIGINT, self.unpause)
+
+        logger.info('Pause initiated.')
+        print(f'Enter Ctrl+C to continue (timeout of {timeout} seconds):')
+
+        self._thread_wait = threading.Event()
+        self._thread_wait.wait(timeout=timeout)
+
+    def unpause(self) -> None:
+        logger.info('Pause cancelled.')
+        if self._thread_wait:
+            self._thread_wait.set()
+
+    def default_selector(self, by: By) -> None:
+        """Sets the default selector for all(), first(), element() finders"""
+        lib.globals.default_selector = by
+
+
+    def start_debug_mode(self, timeout=None) -> None:
+        logger.info("Starting debugger mode.")
+        msg = f"Devtools URL: {self.devtools_url()}"
+        logger.info(msg)
+        print(msg)
+        self.pause(timeout)
+
     # private
 
     def _chrome_version(self) -> str:
@@ -244,7 +286,7 @@ class Application:
 
     def _cleanup(self) -> None:
         self.running = False
-        self.app = None
+        self._app = None
         self._client = None
 
     def _electron_version(self) -> str:
@@ -279,3 +321,6 @@ class Application:
             options.add_argument(args.pop())
 
         return options
+
+    def _register_close_events(self):
+        atexit.register(self.stop)
