@@ -14,6 +14,7 @@ from subprocess import Popen
 from typing import Optional
 
 import psutil
+from selenium.common import JavascriptException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -36,7 +37,7 @@ class Application:
         Creates a new instance of Application.
 
         :Args:
-         - app_path : Path to the Electron application
+         - app_path : Path to the Electron application.
          - chromedriver_version : Specify the exact chromedriver version. https://chromedriver.chromium.org/downloads
          - config : List of optional configurations for webdriver, chromedriver, and electron. Refer to Configuration class for details.
          """
@@ -78,7 +79,7 @@ class Application:
         self.running = True
 
     def stop(self) -> None:
-        """Close App and Client using Webdriver (client) functions."""
+        """Close App and Client."""
         if not self.is_running():
             return
 
@@ -89,6 +90,8 @@ class Application:
         self.switch_to_main_window()
         self.client.close()
         self.client.quit()
+
+        self.terminate()
 
         logger.info("Application closed.")
         self._cleanup()
@@ -120,8 +123,6 @@ class Application:
         except psutil.NoSuchProcess as e:
             logger.warning(f"Process [{process}] already closed.")
             logger.warning(e, exc_info=True)
-
-        self._cleanup()
 
     def restart(self) -> None:
         self.stop()
@@ -169,16 +170,13 @@ class Application:
             return self._app
 
         if self.os == "Darwin":
-            cmd = shlex.split(f'{self.config.app_path} --args')
+            cmd = shlex.split(f'{self.config.app_path}')
         elif self.os == "Windows":
             raise NotImplementedError
         elif self.os == "Linux":
             raise NotImplementedError
         else:
             raise UnsupportedOS(f"Unsupported OS - {self.os}")
-
-        if type(self.config.electron_args) is not list:
-            raise InvalidArgument("Electron_args is not a list")
 
         debugger_arg = f'--remote-debugging-port={self.config.app_port}'
         args = self.config.electron_args.copy() + [debugger_arg]
@@ -265,7 +263,6 @@ class Application:
         """Sets the default selector for all(), first(), element() finders"""
         lib.globals.default_selector = by
 
-
     def start_debug_mode(self, timeout=None) -> None:
         logger.info("Starting debugger mode.")
         msg = f"Devtools URL: {self.devtools_url()}"
@@ -290,7 +287,11 @@ class Application:
         self._client = None
 
     def _electron_version(self) -> str:
-        return self.client.execute_script("return process.versions.electron;")
+        try:
+            return self.client.execute_script("return process.versions.electron;")
+        except JavascriptException as e:
+            logger.warning(e.msg)
+            return "Not available"
 
     def _build_chrome_service(self) -> ChromeService:
         if self.config.chromedriver_path:

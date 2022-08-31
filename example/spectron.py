@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 from selenium.webdriver.common.by import By
 
 from lib.application import Application

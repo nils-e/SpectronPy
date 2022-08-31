@@ -3,6 +3,8 @@
 import os
 from dataclasses import dataclass, asdict, field
 
+from lib.exception import InvalidArgument
+
 
 @dataclass
 class Configuration:
@@ -75,4 +77,13 @@ class Configuration:
     def dict(self):
         return {k: v for k, v in asdict(self).items()}
 
+    def __post_init__(self):
+        if type(self.electron_args) is not list:
+            raise InvalidArgument("Electron args is not a list.")
+
+        if not self.app_port:
+            raise InvalidArgument("App port is invalid.")
+
+        if not os.path.exists(self.app_path):
+            raise InvalidArgument(f"App file does not exist -- {self.app_path}")
 

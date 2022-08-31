@@ -1,8 +1,8 @@
 # SpectronPy
 
-SpectronPy is a Python implementation of Spectron for testing Electron. It allows you to easily use selenium to test your [Electron](https://www.electronjs.org/docs/latest) application.
+SpectronPy is a Python implementation of Spectron for testing Electron. It allows you to easily use selenium to test your [Electron](https://www.electronjs.org/docs/latest) application. SpectronPy is not affiliated with the Spectron project.
 
-JS Spectron was [deprecated](https://github.com/electron-userland/spectron#-spectron-is-officially-deprecated-as-of-february-1-2022).
+JS Spectron was [deprecated](https://github.com/electron-userland/spectron#-spectron-is-officially-deprecated-as-of-february-1-2022) in early 2022.
 
 ## OS Support
 - [x] Mac OS
@@ -72,7 +72,7 @@ app.stop()
 SpectronPy is using [Selenium](https://selenium-python.readthedocs.io/) under the hood. The `client` variable is exposed so you can access all the typical Selenium functionality. It is attached  to the `Application` instance. 
 
 #### Finders
-Within the `client` property, you have access to the `find` property. These functions allow additional ways to find elements. These finders are all using implicit waiting by default which is set to `wait_timeout` in the configuration of `Application`
+Within the `client` object, you have access to the `find` property. These functions allow additional ways to find elements. These finders are all using implicit waiting by default which is set to `wait_timeout` in the configuration of `Application`. You can disable implicit waiting by setting the `wait_timeout` to 0.
 
 - `all()` - Find all elements matching the arguments.
 - `first()` - Find the first element matching the arguments.
@@ -90,7 +90,7 @@ kwargs = {
 ```
 
 #### Matchers
-Within the `client` property, you have access to the `match` property. These functions allow additional ways to match element criteria. This is useful for assertions or waiting.
+Within the `client` object, you have access to the `match` property. These functions allow additional ways to match element criteria. This is useful for assertions or waiting.
 
 - `Title`
 - `URL`
@@ -169,9 +169,16 @@ behave
 5) Install packages: `pip install -e .`
 6) Run an example: `python example/spectron.py`
 
-## To do
+## To Do
 - Implement wait_until_window_loaded
 - Add logfile to logger
 - Add PytestBDD Example
 - Automatically open a debugger window
 - Add attribute finder/matcher kwarg
+
+## Resources
+- https://github.com/electron-userland/spectron
+- https://github.com/electron/electron-quick-start
+  - Helped to implement the test app
+- https://github.com/teamcapybara/capybara
+  - A lot of guidance from one of my favorite selenium frameworks
