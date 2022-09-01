@@ -1,5 +1,5 @@
-# Prequisite:
-# run `npm i` in test/ folder
+# Prerequisite:
+# run `npm i` in `test/` folder
 
 from selenium.webdriver.common.by import By
 
@@ -12,7 +12,7 @@ config = {
     'electron_log_path': 'electron.log',
     'chromedriver_log_path': 'chrome.log',
     'wait_timeout': 5000,
-    # if you are using the electron module to run the app, need to pass the folder(test/) to electron
+    # if you are using the electron module to run the app, need to pass the folder(test/) with `main.js` to electron
     'electron_args': ['test']
 }
 

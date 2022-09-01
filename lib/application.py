@@ -8,7 +8,7 @@ import platform
 import shlex
 import signal
 import subprocess
-import threading
+from threading import Event
 from pathlib import Path
 from subprocess import Popen
 from typing import Optional
@@ -21,11 +21,11 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-import lib.globals
+import lib.globals as world
 import lib.helper as helper
 from lib.configuration import Configuration
 from lib.driver import SpectronDriver
-from lib.exception import POpenError, InvalidArgument, UnsupportedOS, NotInitialized, ClientError
+from lib.exception import POpenError, UnsupportedOS, NotInitialized, ClientError
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class Application:
         self.results = None
         self._client: Optional[SpectronDriver] = None
         self._app: Optional[Popen] = None
-        self._thread_wait: threading.Event = None
+        self._thread_wait: Optional[Event] = None
 
     @property
     def client(self) -> SpectronDriver:
@@ -67,10 +67,10 @@ class Application:
 
     def start(self) -> None:
         """Start App and Client."""
-        lib.globals.initialize()
+        world.initialize()
         self.start_app()
 
-        lib.globals.driver = asyncio.run(self.start_client())
+        world.driver = asyncio.run(self.start_client())
 
         wait_time = helper.to_seconds(self.config.wait_timeout)
         self.client.update_wait(wait_time)
@@ -251,7 +251,7 @@ class Application:
         logger.info('Pause initiated.')
         print(f'Enter Ctrl+C to continue (timeout of {timeout} seconds):')
 
-        self._thread_wait = threading.Event()
+        self._thread_wait = Event()
         self._thread_wait.wait(timeout=timeout)
 
     def unpause(self) -> None:
@@ -261,7 +261,7 @@ class Application:
 
     def default_selector(self, by: By) -> None:
         """Sets the default selector for all(), first(), element() finders"""
-        lib.globals.default_selector = by
+        world.default_selector = by
 
     def start_debug_mode(self, timeout=None) -> None:
         logger.info("Starting debugger mode.")

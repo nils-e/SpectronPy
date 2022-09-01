@@ -4,7 +4,7 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-import lib.globals as glob
+import lib.globals as world
 
 
 def to_seconds(ms_time):
@@ -16,7 +16,7 @@ def generate_target(element_or_locator: str | WebElement, by=None) -> tuple | We
     if not isinstance(element_or_locator, WebElement):
         locator = element_or_locator
         if by is None:
-            by = glob.get_default_selector()
+            by = world.get_default_selector()
 
         target: tuple[By, str] = (by, locator)
     else:

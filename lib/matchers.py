@@ -8,7 +8,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as Expected
 from selenium.webdriver.support.wait import WebDriverWait
 
-import lib.globals as glob
+import lib.globals as world
 from lib import logging
 import lib.expected as SpectronExpected
 from lib.helper import generate_target
@@ -25,7 +25,7 @@ class Title:
 
     @classmethod
     def equals(cls, title: str, wait=None) -> bool:
-        print(glob.get_driver().title)
+        print(world.get_driver().title)
         return _wait_until(Expected.title_is(title), wait, _repr(cls, title))
 
 
@@ -70,9 +70,9 @@ class Element:
 # Private
 def _wait_until(condition, wait: int = None, debug_str=None) -> WebElement | bool:
     if wait is None:
-        wait = glob.get_default_wait_time()
+        wait = world.get_default_wait_time()
 
-    driver = glob.get_driver()
+    driver = world.get_driver()
 
     rtn = False
     try:

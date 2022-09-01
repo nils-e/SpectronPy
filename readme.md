@@ -10,23 +10,22 @@ JS Spectron was [deprecated](https://github.com/electron-userland/spectron#-spec
 - [ ] Linux
 
 ## Installation (wip)
+Requires python 3.10*
 ```python
 pip install ...TBD...
 ```
 
 ## Usage
 ```python
-import time
 from lib.application import Application
 
 # Optional
 config = {
     'app_port': 9000,
-    'electron_log_path': 'electron.log',
-    'chromedriver_log_path': 'chrome.log',
     'wait_timeout': 3000,
 }
 
+# Initialize Application object with required parameters
 app = Application(
     app_path='/Applications/Slack.app/Contents/MacOS/Slack',
     chromedriver_version="96.0.4664.35",
@@ -34,17 +33,18 @@ app = Application(
 )
 app.start()
 
-time.sleep(5)
+# Implicit wait for title to update
+app.client.match.Title.has('slack', case_insensitive=True)
 print(app.client.title)
-app.take_screenshot()
 
+app.take_screenshot()
 app.stop()
 ```
 
 ## Application API
 
 ### Options
-- `app_path` - required. Path to electron application. Path is relative to the current working directory.
+- `app_path` - required. Path to electron application or module.
 - `chromedriver_version` - required. Version of chromedriver to download. This must match the version of the Electron application.
 - `config` - optional.
 
@@ -74,10 +74,10 @@ SpectronPy is using [Selenium](https://selenium-python.readthedocs.io/) under th
 #### Finders
 Within the `client` object, you have access to the `find` property. These functions allow additional ways to find elements. These finders are all using implicit waiting by default which is set to `wait_timeout` in the configuration of `Application`. You can disable implicit waiting by setting the `wait_timeout` to 0.
 
-- `all()` - Find all elements matching the arguments.
-- `first()` - Find the first element matching the arguments.
-- `element()` - Find an element matching the arguments. Expects only 1 exact match.
-- `by_*()` - Similar to `element()` but uses different locator strategies.
+- `all(locator: str, by=None, wait: int = None, **kwargs)` - Find all elements matching the arguments.
+- `first(locator: str, by=None, wait: int = None, **kwargs)` - Find the first element matching the arguments.
+- `element(locator: str, by=None, wait: int = None, **kwargs)` - Find an element matching the arguments. Expects only 1 exact match.
+- `by_*(...)` - Similar to `element()` but uses different locator strategies.
 
 ```python
 kwargs = {

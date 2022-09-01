@@ -3,7 +3,7 @@
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.timeouts import Timeouts
 
-import lib.globals
+import lib.globals as world
 
 
 class SpectronDriver(WebDriver):
@@ -28,4 +28,4 @@ class SpectronDriver(WebDriver):
 
     def _set_wait_timers(self, timeouts: Timeouts):
         self.timeouts = timeouts
-        lib.globals.default_wait_time = timeouts.implicit_wait
+        world.default_wait_time = timeouts.implicit_wait
