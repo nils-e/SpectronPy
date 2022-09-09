@@ -33,9 +33,9 @@ jobs:
         run: npm run build:test-app
       - name: Setup Python Virtual Env
         run: |
-          pip install --upgrade pip
           python -m venv venv
           source venv/bin/activate
+          pip install -e .
           echo "VIRTUAL ENV:" $VIRTUAL_ENV
       - name: Run e2e tests
         run: npm run test:e2e
