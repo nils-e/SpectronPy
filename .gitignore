@@ -135,4 +135,3 @@ chromedriver
 
 /SpectronPy.egg-info
 /test/node_modules
-/test/package-lock.json
