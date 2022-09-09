@@ -31,13 +31,10 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.node_version }}-${{ hashFiles('**/package-lock.json') }}
       - name: Install test app dependencies
         run: npm run build:test-app
-      - name: Setup Python Virtual Env
+      - name: Setup Python Env
         run: |
           python -m pip install --upgrade pip
           python --version
-          python -m venv venv
-          source venv/bin/activate
           python -m pip install -e .
-          echo "VIRTUAL ENV:" $VIRTUAL_ENV
       - name: Run e2e tests
-        run: npm run test:e2e
+        run: python example/spectron_with_test_app.py
