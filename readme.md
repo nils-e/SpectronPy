@@ -44,8 +44,8 @@ app.stop()
 ## Application API
 
 ### Options
-- `app_path` - required. Path to electron application or module.
-- `chromedriver_version` - required. Version of chromedriver to download. This must match the version of the Electron application.
+- `app_path` - **required.** Path to electron application or module.
+- `chromedriver_version` - **required.** Version of chromedriver to download. This must match the version of the Electron application.
 - `config` - optional.
 
 #### Config
@@ -96,7 +96,9 @@ Within the `client` object, you have access to the `match` property. These funct
 - `URL`
 - `Element`
 
-## Methods
+### Methods
+Application class methods.
+
     def __init__(self, app_path: str, chromedriver_version: str, config=None)
 Initialize Application.
 
@@ -114,22 +116,22 @@ Terminates the application via OS-specific functions using PID. This is useful i
 Restart the application and webdriver.
 
     async def start_client(self) -> WebDriver
-Configure and start webdriver. Returns a Webdriver instance.
+Configure and start webdriver.
 
     def start_app(self) -> Popen
-Start Electron application in subprocess.
+Start Electron application.
 
-    def wait_until_window_loaded(self)
+    #WIP def wait_until_window_loaded(self)
 Not implemented yet.
 
     def is_running(self) -> bool
 Returns current running status of the Electron application.
 
     def get_settings(self) -> Configuration
-Returns the Application options set earlier.
+Returns the current Application options.
 
     def switch_to_main_window(self) -> None
-Switch Webdriver to main window.
+Switch to main window.
 
     def take_screenshot(self, filename=None, folder=None) -> None
 Take a screenshot of the Electron application.
@@ -171,10 +173,12 @@ behave
 
 ## To Do
 - Implement wait_until_window_loaded
-- Add logfile to logger
-- Add PytestBDD Example
+- Add logfile out to logger
+- Add PytestBDD example
 - Automatically open a debugger window
-- Add attribute finder/matcher kwarg
+- Add kwarg parameter to finder/matcher
+- Add commitizen
+- Add python linter
 
 ## Resources
 - https://github.com/electron-userland/spectron
