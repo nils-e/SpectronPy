@@ -3,14 +3,14 @@
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.timeouts import Timeouts
 
-import lib.globals as world
+from . import globals as world
 
 
 class SpectronDriver(WebDriver):
 
     def __init__(self, kwargs):
-        import lib.matchers as matchers
-        import lib.finders as finders
+        from . import matchers
+        from . import finders
 
         super().__init__(**kwargs)
         matchers.driver = self

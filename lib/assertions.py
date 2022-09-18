@@ -2,10 +2,10 @@
 
 from selenium.webdriver.remote.webelement import WebElement
 
-import lib.finders as finders
-from lib import logging
-from lib.exception import ExpectationNotMet
-from lib.result import _verify_match
+from . import finders
+import logging
+from .exception import ExpectationNotMet
+from .result import _verify_match
 
 logger = logging.getLogger(__name__)
 

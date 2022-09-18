@@ -8,10 +8,10 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as Expected
 from selenium.webdriver.support.wait import WebDriverWait
 
-import lib.globals as world
-from lib import logging
-import lib.expected as SpectronExpected
-from lib.helper import generate_target
+from . import globals as world
+import logging
+from . import expected as SpectronExpected
+from .helper import generate_target
 
 logger = logging.getLogger(__name__)
 

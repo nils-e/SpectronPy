@@ -21,11 +21,11 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-import lib.globals as world
-import lib.helper as helper
-from lib.configuration import Configuration
-from lib.driver import SpectronDriver
-from lib.exception import POpenError, UnsupportedOS, NotInitialized, ClientError
+from . import globals as world
+from . import helper
+from .configuration import Configuration
+from .driver import SpectronDriver
+from .exception import POpenError, UnsupportedOS, NotInitialized, ClientError
 
 logger = logging.getLogger(__name__)
 

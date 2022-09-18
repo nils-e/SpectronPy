@@ -10,5 +10,8 @@
   "scripts": {
     "build:test-app": "cd test && npm install",
     "test:e2e": "python example/spectron_with_test_app.py"
+  },
+  "dependencies": {
+    "test": "^3.2.1"
   }
 }

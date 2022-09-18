@@ -5,7 +5,7 @@ import dataclasses
 import selenium.webdriver.support.expected_conditions as Expected
 from selenium.webdriver.remote.webelement import WebElement
 
-import lib.expected as SpectronExpected
+from . import expected as SpectronExpected
 
 
 @dataclasses.dataclass

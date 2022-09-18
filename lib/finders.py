@@ -7,11 +7,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as Expected
 
-import lib.expected as SpectronExpected
-from lib.element import wrap_element
-from lib.exception import ExpectationNotMet, AmbiguousMatch
-from lib.globals import get_driver, get_default_wait_time, get_default_selector
-from lib.query import query
+from . import expected as SpectronExpected
+from .element import wrap_element
+from .exception import ExpectationNotMet, AmbiguousMatch
+from .globals import get_driver, get_default_wait_time, get_default_selector
+from .query import query
 
 logger = logging.getLogger(__name__)
 

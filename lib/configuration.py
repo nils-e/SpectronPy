@@ -3,7 +3,7 @@
 import os
 from dataclasses import dataclass, asdict, field
 
-from lib.exception import InvalidArgument
+from .exception import InvalidArgument
 
 
 @dataclass

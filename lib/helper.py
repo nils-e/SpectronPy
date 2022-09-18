@@ -4,7 +4,7 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-import lib.globals as world
+from . import globals as world
 
 
 def to_seconds(ms_time):

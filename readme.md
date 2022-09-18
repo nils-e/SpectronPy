@@ -9,15 +9,15 @@ JS Spectron was [deprecated](https://github.com/electron-userland/spectron#-spec
 - [ ] Windows
 - [ ] Linux
 
-## Installation (wip)
-Requires python 3.10*
+## Installation
+_Requires python 3.10_
 ```python
-pip install ...TBD...
+pip install spectronpy
 ```
 
 ## Usage
 ```python
-from lib.application import Application
+from spectronpy.application import Application
 
 # Optional
 config = {

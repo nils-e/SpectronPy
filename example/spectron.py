@@ -3,8 +3,8 @@ from pathlib import Path
 
 from selenium.webdriver.common.by import By
 
-from lib.application import Application
-from lib.assertions import assert_selector
+from spectronpy.application import Application
+from spectronpy.assertions import assert_selector
 
 # Optional
 config = {
