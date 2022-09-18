@@ -4,10 +4,6 @@ SpectronPy is a Python implementation of Spectron for testing Electron. It allow
 
 JS Spectron was [deprecated](https://github.com/electron-userland/spectron#-spectron-is-officially-deprecated-as-of-february-1-2022) in early 2022.
 
-## OS Support
-- [x] Mac OS
-- [ ] Windows
-- [ ] Linux
 
 ## Installation
 _Requires python 3.10_
@@ -17,7 +13,7 @@ pip install spectronpy
 
 ## Usage
 ```python
-from spectronpy.application import Application
+from spectronpy import Application
 
 # Optional
 config = {

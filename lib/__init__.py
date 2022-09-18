@@ -1,16 +1,26 @@
-from . import application
-from . import assertions
-from . import configuration
-from . import driver
-from . import element
-from . import exception
-from . import expected
-from . import finders
-from . import globals
-from . import helper
-from . import matchers
-from . import query
-from . import result
+from .application import Application
+from .assertions import assert_selector, assert_no_selector
+from .configuration import Configuration
+from .driver import SpectronDriver
+from .element import SpectronElement, wrap_element
+from .exception import (
+    POpenError,
+    InvalidArgument,
+    UnsupportedOS,
+    NotInitialized,
+    ClientError,
+    ExpectationNotMet,
+    AmbiguousMatch
+)
+from .expected import title_contains, text_to_be_present_in_element
+from .globals import (
+    get_driver,
+    get_default_wait_time,
+    get_default_selector,
+    initialize
+)
+from .helper import to_seconds, generate_target
+from .result import Result, ResultDict
 
 import logging
 
