@@ -135,3 +135,4 @@ chromedriver
 
 /SpectronPy.egg-info
 /test/node_modules
+node_modules
