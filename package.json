@@ -1,6 +1,6 @@
 {
   "name": "spectronpy",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "SpectronPy is a Python implementation of Spectron for testing Electron. It allows you to easily use selenium to test your [Electron](https://www.electronjs.org/docs/latest) application. SpectronPy is not affiliated with the Spectron project.",
   "directories": {
     "example": "example",
